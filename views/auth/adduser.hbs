@@ -1,0 +1,42 @@
+<h3>Create User</h3>
+
+<form action="/room/createuser" method="post">
+  <label for="username">Username</label>
+  <input type="text" name="username">
+
+<select name="role" id="role">
+  <option value="Developer">Developer</option>
+  <option value="TA">TA</option>
+</select>
+
+<button type="submit">Create</button>
+</form>
+
+<h3>Assign Role to Current User</h3>
+<form action="/room/adduser" method="post">
+<select name="username" id="username">
+  {{#each users }}
+    <option value="{{this.username}}" >{{this.username}} </option>
+  {{/each}}
+</select>
+<select name="role" id="role">
+  <option value="Developer">Developer</option>
+  <option value="TA">TA</option>
+
+</select>
+
+
+{{#if message}}
+<div>
+  <h1>{{message}} </h1>
+</div>
+{{/if}}
+
+<button type="submit">Submit</button>
+
+</form>
+<div>
+  {{#each users }}
+  <h4>{{this.username}} (<i>{{this.role}} </i>) - (<a href="/room/profile/{{this._id}} ">View Profile</a>, <a href="/room/profile/{{this._id}}/delete">Delete</a> )</h4> 
+  {{/each }}
+</div>

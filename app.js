@@ -12,7 +12,8 @@ const path         = require('path');
 const session    = require("express-session");
 const MongoStore = require('connect-mongo')(session);
 const flash      = require("connect-flash");
-    
+
+
 
 mongoose
   .connect('mongodb://localhost/lab-passport-roles', {useNewUrlParser: true})
@@ -24,7 +25,7 @@ mongoose
   });
 
 const app_name = require('./package.json').name;
-const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.')[0]}`);
+// const debug = require('debug')(`${app_name}:${path.basename(__filename).split('.')[0]}`);
 
 const app = express();
 
@@ -58,6 +59,8 @@ hbs.registerHelper('ifUndefined', (value, options) => {
       return options.fn(this);
   }
 });
+
+
   
 
 // default value for title local
@@ -74,12 +77,28 @@ app.use(session({
 app.use(flash());
 require('./passport')(app);
     
+app.use((req,res,next) => {
+  res.locals.x = 42 
+  // all the views have a variable x equal to 42
+
+  // if the user is conncted, passport defined before a req.user
+  res.locals.isConnected = !!req.user;
+  //! !! converts truthy/falsy to true/false
+
+  res.locals.isAdmin = req.user && req.user.role === 'Boss'
+
+  next() // to go to the next middleware
+})
+
 
 const index = require('./routes/index');
 app.use('/', index);
 
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
+
+const roomRoutes = require('./routes/room');
+app.use('/room', roomRoutes);
       
 
 module.exports = app;

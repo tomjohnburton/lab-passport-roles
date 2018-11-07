@@ -8,12 +8,21 @@ const bcrypt = require("bcrypt");
 const bcryptSalt = 10;
 
 
+// Authenticate Function
+
+
+
 router.get("/login", (req, res, next) => {
   res.render("auth/login", { "message": req.flash("error") });
 });
+router.get("/private" , (req, res, next) => {
+  res.render("auth/private");
+});
+
+
 
 router.post("/login", passport.authenticate("local", {
-  successRedirect: "/",
+  successRedirect: "/auth/private",
   failureRedirect: "/auth/login",
   failureFlash: true,
   passReqToCallback: true
@@ -42,12 +51,13 @@ router.post("/signup", (req, res, next) => {
 
     const newUser = new User({
       username,
-      password: hashPass
+      password: hashPass,
+      role: ''
     });
 
     newUser.save()
     .then(() => {
-      res.redirect("/");
+      res.redirect("/auth/login");
     })
     .catch(err => {
       res.render("auth/signup", { message: "Something went wrong" });
